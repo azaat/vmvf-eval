@@ -16,7 +16,9 @@
 set -eo pipefail
 
 CONFIG_PATH=$1
-BAG_PATH=$2
+BAGS_PATH=$2
+TRAJ_PATH=$3
+
 
 source ../devel/setup.bash
 
@@ -24,14 +26,31 @@ source ../devel/setup.bash
 roscore &
 ros_proc=$!
 
-# Run eval node
-rosrun vins vins_node "$CONFIG_PATH" &
-node_proc=$!
+BAGS_PATH=$(echo "$BAGS_PATH" | sed 's:/*$::')
+BAGS="$BAGS_PATH/*"
 
-# PLay bag file
-rosbag play "$BAG_PATH"
+# Loop by bag files
+for BAG in $BAGS
+do
+    if [[ -f "$BAG" ]]
+    then
+        DATE=$(basename "$BAG" ".bag")
 
-wait "$node_proc"
+        # Run eval node
+        rosrun vins vins_node "$CONFIG_PATH" &
+        node_proc=$!
+
+        # PLay bag file
+        rosbag play "$BAG"
+
+        kill "$node_proc"
+
+        # Convert trajectory
+        python3 traj_to_tum.py --date "$DATE" --traj_path "$TRAJ_PATH" --traj_file "vio.csv"
+    fi
+done
+
+
 
 # Kill roscore running in background
 kill "$ros_proc"
