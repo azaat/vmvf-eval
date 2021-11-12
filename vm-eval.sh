@@ -37,7 +37,7 @@ do
         DATE=$(basename "$BAG" ".bag")
 
         # Run eval node
-        roslaunch vins_estimator euroc.launch 
+        roslaunch vins_estimator euroc.launch &
         node_proc=$!
 
         # PLay bag file
