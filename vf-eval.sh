@@ -22,6 +22,7 @@ source ../devel/setup.bash
 
 # Launch roscore in background
 roscore &
+ros_proc=$!
 
 # Run eval node
 rosrun vins vins_node "$CONFIG_PATH" &
@@ -33,4 +34,4 @@ rosbag play "$BAG_PATH"
 wait "$node_proc"
 
 # Kill roscore running in background
-killall roscore
+kill "$ros_proc"
