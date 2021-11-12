@@ -37,7 +37,7 @@ do
         DATE=$(basename "$BAG" ".bag")
 
         # Run eval node
-        rosrun vins vins_node "$CONFIG_PATH" &
+        roslaunch vins_estimator euroc.launch 
         node_proc=$!
 
         # PLay bag file
@@ -46,7 +46,7 @@ do
         kill "$node_proc"
 
         # Convert trajectory
-        python3 traj_to_tum.py --date "$DATE" --traj_path "$TRAJ_PATH" --traj_file "vio.csv"
+        python3 traj_to_tum.py --date "$DATE" --traj_path "$TRAJ_PATH" --traj_file "vins_result_no_loop.csv"
     fi
 done
 
