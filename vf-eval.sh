@@ -37,13 +37,16 @@ do
         DATE=$(basename "$BAG" ".bag")
 
         # Run eval node
-        rosrun vins vins_node "$CONFIG_PATH" &
+        rosrun vins vins_node "$CONFIG_PATH" >> output.log &
         node_proc=$!
 
         # PLay bag file
         rosbag play "$BAG"
-
-        kill "$node_proc"
+        while true
+        do
+            echo "Waiting for ros node to stop providing output..." 
+            timeout=10; if [ -z "$(find "$TRAJ_PATH"/vio.csv -newermt @$(($(date +%s)-${timeout})))" ]; then break; fi
+        done
 
         # Convert trajectory
         python3 traj_to_tum.py --date "$DATE" --traj_path "$TRAJ_PATH" --traj_file "vio.csv"
