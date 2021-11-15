@@ -37,7 +37,7 @@ do
         DATE=$(basename "$BAG" ".bag")
 
         # Run eval node
-        rosrun vins vins_node "$CONFIG_PATH" >> output.log &
+        rosrun vins vins_node "$CONFIG_PATH" &
         node_proc=$!
 
         # PLay bag file
